@@ -1,0 +1,17 @@
+# Local OpenClaw files can contain machine-specific configuration or secrets.
+.openclaw/
+gateway.cmd
+*.log
+*.tmp
+
+# Windows / editor noise
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# PowerShell generated artifacts
+*.ps1xml
+*.pssc
+*.psrc
