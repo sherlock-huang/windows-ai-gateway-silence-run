@@ -78,19 +78,19 @@ hermes status
 .\hermes-gateway uninstall
 ```
 
-Hermes Gateway 没有 OpenClaw 那种固定 `18789` 端口，所以这个脚本不做端口探测，而是检查：
+Hermes Gateway 没有 OpenClaw 那种固定 `18789` 端口，所以这个脚本不做端口探测，而是检查当前 `HERMES_HOME` 下的状态文件和日志：
 
-- `~\.hermes\gateway.pid`
-- `~\.hermes\gateway_state.json`
-- `~\.hermes\logs\agent.log`
-- `~\.hermes\logs\errors.log`
+- `gateway.pid`
+- `gateway_state.json`
+- `logs\agent.log`
+- `logs\errors.log`
 - PID 对应的真实 Windows 进程
 
 如果第一次从前台终端切到静默后台时提示 `Access is denied`，说明旧 Hermes 进程可能是由更高权限的终端启动的。手动关闭那个前台 Hermes 终端一次，或者用同样权限的 PowerShell 执行 `restart`，之后就会由计划任务静默接管。
 
 ## 代理和编码
 
-Hermes 隐藏启动器会从 `~\.hermes\.env` 里读取下面这些运行时环境变量：
+Hermes 隐藏启动器会从 `HERMES_HOME\.env` 里读取下面这些运行时环境变量：
 
 ```env
 HTTP_PROXY=http://127.0.0.1:10809

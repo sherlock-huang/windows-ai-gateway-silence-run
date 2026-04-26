@@ -79,8 +79,20 @@ function Resolve-WorkingDirectory {
     return (Resolve-Path -LiteralPath $Requested).Path
   }
 
+  $homeInstallDir = Join-Path (Get-HermesHome) "hermes-agent"
+  if (Test-Path -LiteralPath $homeInstallDir) {
+    return (Resolve-Path -LiteralPath $homeInstallDir).Path
+  }
+
   if (Test-Path -LiteralPath "D:\hermes") {
     return "D:\hermes"
+  }
+
+  if ($PSScriptRoot) {
+    $repoRoot = Resolve-Path -LiteralPath $PSScriptRoot -ErrorAction SilentlyContinue
+    if ($repoRoot) {
+      return $repoRoot.Path
+    }
   }
 
   return $env:USERPROFILE
@@ -207,13 +219,19 @@ function Write-GeneratedRunner {
   New-Item -ItemType Directory -Force -Path (Get-HermesLogsDir) | Out-Null
 
   $runnerPath = Get-RunnerPath
+  $hermesHome = Get-HermesHome
   $escapedHermes = $HermesExe.Replace("'", "''")
   $escapedWorkDir = $WorkDir.Replace("'", "''")
+  $escapedHermesHome = $hermesHome.Replace("'", "''")
   $content = @"
 `$ErrorActionPreference = "Stop"
+`$hermesHome = '$escapedHermesHome'
+if (-not `$env:HERMES_HOME) {
+  [Environment]::SetEnvironmentVariable("HERMES_HOME", `$hermesHome, "Process")
+}
 
 function Import-HermesRuntimeEnv {
-  `$envFile = Join-Path `$env:USERPROFILE ".hermes\.env"
+  `$envFile = Join-Path `$hermesHome ".env"
   if (-not (Test-Path -LiteralPath `$envFile)) { return }
 
   `$allowed = @(
@@ -236,7 +254,7 @@ function Import-HermesRuntimeEnv {
 `$env:PYTHONIOENCODING = if (`$env:PYTHONIOENCODING) { `$env:PYTHONIOENCODING } else { "utf-8" }
 Import-HermesRuntimeEnv
 
-`$logDir = Join-Path `$env:USERPROFILE ".hermes\logs"
+`$logDir = Join-Path `$hermesHome "logs"
 New-Item -ItemType Directory -Force -Path `$logDir | Out-Null
 `$wrapperLog = Join-Path `$logDir ("gateway-hidden-{0}.log" -f (Get-Date -Format "yyyy-MM-dd"))
 Set-Location -LiteralPath '$escapedWorkDir'
@@ -478,9 +496,9 @@ Usage:
 
 Notes:
   - Hermes has no fixed OpenClaw-style port such as 18789.
-  - Status uses ~/.hermes/gateway.pid plus the real Windows process.
+  - Status uses HERMES_HOME/gateway.pid plus the real Windows process.
   - Hidden startup runs: hermes gateway run --replace --accept-hooks.
-  - Hermes internal logs are under ~/.hermes/logs/.
+  - Hermes internal logs are under HERMES_HOME/logs/.
 "@
 }
 
