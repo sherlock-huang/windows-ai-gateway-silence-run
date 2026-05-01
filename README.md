@@ -112,7 +112,7 @@ PYTHONIOENCODING=utf-8
 
 ## 相关链接
 
-- GitHub 仓库：https://github.com/sherlock-huang/windows-ai-gateway-silence-run
+- GitHub 仓库：https://github.com/kunpeng-ai-lab/windows-ai-gateway-silence-run
 - OpenClaw 工具页：https://kunpeng-ai.com/tools/openclaw-windows-silence-run/
 - OpenClaw 项目页：https://kunpeng-ai.com/projects/openclaw-windows-silence-run/
 - OpenClaw 使用指南：https://kunpeng-ai.com/blog/openclaw-windows-silent-gateway-after-update/
